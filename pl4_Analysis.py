@@ -46,7 +46,7 @@ class pl4_Analysis(object):
         sor_info_1 = self.__b[47+self.tacs_num*6:47+self.tacs_num*6+self.point_num*6]
         self.all_point_name = []#所有的节点名称
         for i in range(0,len(sor_info_1),6):
-            self.all_point_name.append(str(self.b2any('6s',sor_info_1[i:i+6],6),encoding = 'utf-8'))
+            self.all_point_name.append(str(self.b2any('6s',sor_info_1[i:i+6],6),encoding = 'gbk'))
         
         sor_info_2 = self.__b[47+self.tacs_num*6+self.point_num*6:
             47+self.tacs_num*6+self.point_num*6+self.total_num*8]
