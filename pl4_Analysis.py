@@ -12,8 +12,9 @@ import pandas
 class pl4_Analysis(object):
     
 
-    def __init__(self,filename):
-        self.__file = open(filename,'rb')
+    def __init__(self,ATPfile):
+        self.ans_file = open(ATPfile+'.txt','w+')
+        self.__file = open(ATPfile+'.pl4','rb')
         a = struct.iter_unpack('c',self.__file.read())                    
         self.__file.close()
         self.__b = []
@@ -73,7 +74,9 @@ class pl4_Analysis(object):
                 self.my_ans.insert(i,self.mymodel[i-1],ans)
                 
     def get_ans(self):
-        return self.my_ans
+        self.__Analysis()
+        self.ans_file.writelines('Done')
+        self.ans_file.close()
             
         
         
