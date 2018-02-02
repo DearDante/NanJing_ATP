@@ -44,9 +44,9 @@ class Series_Template:
         class MyException(Exception):
             def __init__(self, args):
                 self.args = args
-        rule1 = r'(\d+)'
-        rule2 = r'(\[(\d+)\,(\d+)\]([A-Z])\((\d+)\))'
-        rule3 = r'(\[(\d+)\,(\d+)\])'
+        rule1 = r'(\d+\.\d*)'
+        rule2 = r'(\[(\d+\.\d*)\,(\d+\.\d*)\]([A-Z])\((\d+\.\d*)\))'
+        rule3 = r'(\[(\d+\.\d*)\,(\d+\.\d*)\])'
         result = []
         curBound = -INF
         try:
