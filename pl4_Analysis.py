@@ -8,12 +8,12 @@ Created on Wed Jan 17 15:20:38 2018
 import struct
 import binascii
 import pandas
-
+import os
 class pl4_Analysis(object):
     
 
     def __init__(self,ATPfile):
-        self.ans_file = open(ATPfile+'.txt','w+')
+        self.ans_file = open(ATPfile+'.txt','a+')
         self.__file = open(ATPfile+'.pl4','rb')
         a = struct.iter_unpack('c',self.__file.read())                    
         self.__file.close()
@@ -74,11 +74,16 @@ class pl4_Analysis(object):
                 self.my_ans.insert(i,self.mymodel[i-1],ans)
                 
     def get_ans(self):
-        self.__Analysis()
-        self.ans_file.writelines('Done')
+        a = self.my_ans.max()
+        if os.path.getsize(self.ans_file.name) < 5:
+            for i in range(1,len(a)):
+                self.ans_file.write('%10s ' % self.my_ans.max().index[i])
+            self.ans_file.write('\n')
+        for i in range(1,len(a)):
+            self.ans_file.write('%10e '% self.my_ans.max()[i])
+        self.ans_file.write('\n')
         self.ans_file.close()
-            
-        
+        return a
         
         
         
