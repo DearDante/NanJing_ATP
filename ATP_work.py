@@ -18,6 +18,9 @@ import ATP_model as Am
 import run_ATP as rATP
 import pl4_Analysis as pA
 import os
+import ATP_Main_Window as AU
+from PyQt5.QtWidgets import QMainWindow, QApplication
+import sys
 
 class atp_work(object):
     def __init__(self,ATPfile,ATPmodel):
@@ -48,7 +51,7 @@ class atp_work(object):
                 os.remove(self.filename+'.dbg')
                 os.remove(self.filename+'.lis')
             
-if __name__ != '__main__':
+if __name__ == '__main__':
      a = atp_work(r'D:\ATPauto\test',0)
      yn = input("是否已经填写excel表？（Y/N）")
      if yn == 'Y':

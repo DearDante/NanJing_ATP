@@ -13,14 +13,13 @@ class pl4_Analysis(object):
     
 
     def __init__(self,ATPfile):
-        self.ans_file = open(ATPfile+'.txt','a+')
         self.__file = open(ATPfile+'.pl4','rb')
         a = struct.iter_unpack('c',self.__file.read())                    
         self.__file.close()
         self.__b = []
         for i in a:
             self.__b.append(i[0])
-        self.__Analysis()
+        
         
     
     def b2any(self,goal_type,sor,num):
@@ -60,30 +59,62 @@ class pl4_Analysis(object):
             self.mymodel.append(self.all_point_name[self.model_point[i]-1])
 #        print(self.mymodel) 
             
-    def __Analysis(self):
+    def __Analysis(self,start_time,end_time):
         self.__prepare()
         self.__get_point()
         self.my_ans = pandas.DataFrame()
+        self.start_t = 0
+        self.end_t = 0
         for i in range(0,self.total_num+1):
             ans = []
+            count = 0
             for j in range(self.start-1,self.fin-1,4*(self.total_num+1)):
                 ans.append(self.b2any('f',self.__b[j+i:j+i+4],4))
+                #根据用户选择的起止时间，来标定数据中对应的时间区间起止点
+                if i == 0:
+#                    print(self.b2any('f',self.__b[j+i:j+i+4],4))
+                    if(self.b2any('f',self.__b[j+i:j+i+4],4) < start_time):
+                        self.start_t = count
+                    elif(self.b2any('f',self.__b[j+i:j+i+4],4) < end_time):
+                        self.end_t = count+1
+                    count = count + 1
             if(i == 0):
                 self.my_ans.insert(i,'time',ans)
             else:
-                self.my_ans.insert(i,self.mymodel[i-1],ans)
+                self.my_ans.insert(i,self.mymodel[i-1].strip(),ans)
+    
+    def get(self):
+        return self.my_ans
                 
-    def get_ans(self):
-        a = self.my_ans.max()
-        if os.path.getsize(self.ans_file.name) < 5:
-            for i in range(1,len(a)):
-                self.ans_file.write('%10s ' % self.my_ans.max().index[i])
+    def get_ans(self,filename,ans_info,num,model_num):
+        self.__Analysis(ans_info[1],ans_info[2])
+        #不同的模式结果记录在不同的文件中
+        filename = filename+'_%d.txt' % model_num
+        self.ans_file = open(filename,'a+')
+#        print(ans_info[3].split(','))
+#        print(self.my_ans[ans_info[3].split(',')])
+        if (ans_info[3] != 'NAN') & (ans_info[3] != ''):
+            self.my_ans_2 = self.my_ans[ans_info[3].split(',')][self.start_t:self.end_t]#存放用户需要的时间段及结果标签对应的数据
+        else:
+            self.my_ans_2 = self.my_ans.iloc[self.start_t:self.end_t,1:]
+#        print(self.my_ans_2.shape)
+        if ans_info[0]:
+            a = abs(self.my_ans_2.max())
+        else:
+            a = self.my_ans_2.max()
+            
+        if os.path.getsize(self.ans_file.name) < 1:
+            self.ans_file.write('      ')
+            for i in range(len(a)):
+                self.ans_file.write('%12s ' % self.my_ans_2.max().index[i].strip())
             self.ans_file.write('\n')
-        for i in range(1,len(a)):
-            self.ans_file.write('%10e '% self.my_ans.max()[i])
+        self.ans_file.write('%-6d' % (num+1))
+        for i in range(len(a)):
+            self.ans_file.write('%10e '% self.my_ans_2.max()[i])
         self.ans_file.write('\n')
         self.ans_file.close()
-        return a
         
         
         
+if __name__ == '__main__':
+    a = pl4_Analysis(r'D:\ATPATP\test_1')

@@ -61,11 +61,13 @@ class create_ATP(object):
         #model为excel中提取出来的策略总表，元素为单个策略列表
         for i in range(len(model)):
             #对每一个策略进行分解，转化为四个元素
-            pat = model[i][0]+'.{0,5}'+model[i][1]
-            print(pat)
+            pat = model[i][0]+'.{0,5}'+model[i][1]+'.*'
             s_index = self.choose_switch(pat)
             for j in range(len(s_index)):
-                name = re.match('  '+pat,self.__source[s_index[j]]).group()
+                #解决由于编码差异导致的字符串长度变化
+                sor_str = re.match('  '+pat,self.__source[s_index[j]]).group()
+                my_len = len(sor_str)-66
+                name = re.match('  '+pat,self.__source[s_index[j]]).group()[:my_len]
                 #处理区间量
                 if type(model[i][2]) == str:
                     a = self.deal(model[i][2],delta)
@@ -82,9 +84,10 @@ class create_ATP(object):
                         t_end = ST.Series_Template(a).distribute()[0]
                     else:
                         t_end = float(model[i][3])
-                #将四个元素合并为符合ATP'  %-6s%-6s%10f%10f                                             0\n
-                model_str = '%-14s%10f%10f                                             0\n' % (name,t_start,t_end)
-                print(model_str)
+                #将四个元素合并为符合ATP'  %-6s%-6s%10f%10f                                             0\n)
+#                a = input('稍等')
+                model_str = name + '%10f%10f                                             0\n' % (t_start,t_end)
+#                print(model_str)
                 self.__source[s_index[j]] = model_str
     
    
@@ -96,14 +99,14 @@ class create_ATP(object):
         new_file.close()
             
 if __name__ == '__main__':
-    a = create_ATP(r'C:\Users\43926\Desktop\test')   
+    a = create_ATP(r'C:\Users\43926\Desktop\haha')   
     a.get_info()
     b=a.get_Tmax()
-    a.choose_switch('XS.')
+    a.choose_switch('XM.')
     a.deal('[1.2,1.3]',0.0001)
     
     c = am.ATP_model()
-    c.set_model(r"D:\ATPauto")
+    c.set_model(r"C:\Users\43926\Desktop\haha")
     d = c.get_model()
     
     a.set_ATP(d[0],0.0001)
